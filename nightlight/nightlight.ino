@@ -13,7 +13,7 @@ const int cols = 8;
 const int rows = 5;
 const int pin = 6;
 const int contrast = 1;
-const float theta = 0.025; // Speed of colour change
+const float theta = 0.33; // Speed of colour change
 int brightness = 128;
 int powerSavingBrightness = 5;
 bool power = true;
@@ -132,7 +132,8 @@ void neomatrix_loop() {
             break;
           case PULSE:
             hue = (float)(int((delta - distance) * contrast) % 360) / 360;
-            matrix.drawPixel( x, y, hsl_to_rgb( hue, abs(sin(delta)), 0.5 ) );
+            Serial.println(abs(sin(delta) * .5));
+            matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.4 + abs(sin(delta) * 0.1)) );
           default:
             break;
         }
