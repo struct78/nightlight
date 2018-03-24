@@ -20,7 +20,7 @@ Default: 1
 **const float theta**
 
 The lower the number, the slower the transition through the colour spectrum.
-Default: 0.025
+Default: 0.33
 
 **int brightness**
 
