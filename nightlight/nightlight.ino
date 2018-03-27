@@ -7,19 +7,19 @@ enum Pattern {
   WIPE,
   DIAGONAL_WIPE,
   RADIAL,
-  RAINBOW
+  RAINBOW_STRIPE
 };
 
 const int cols = 8;
 const int rows = 5;
 const int pin = 6;
 const int contrast = 10;
-const float theta = 0.2; // Speed of colour change
+const float theta = 0.025; // Rate of colour change
+const int brightness = 64;
 
-Pattern pattern = RAINBOW;
+Pattern pattern = RAINBOW_STRIPE;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(rows, cols, pin, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE, NEO_GRB + NEO_KHZ800);
 
-int brightness = 80;
 bool power = true;
 long ticks = 0;
 long timeout = 3600000; // 1 hour
@@ -147,20 +147,19 @@ void neomatrix_loop() {
             hue = (float)(int((delta + z) * contrast) % 360) / 360;
             matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ));
             break;
-          case RAINBOW:
-            hue = (float)(int(((360 / rows) * x) + delta) % 360) / 360;
+          case RAINBOW_STRIPE:
+            hue = (float)(int(((360 / rows) * x) + delta * contrast) % 360) / 360;
             matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ) );
             break;
           default:
             break;
         }
-
-        matrix.show();
       }
     }
   }
   else {
     matrix.fillScreen(0);
-    matrix.show();
   }
+  
+  matrix.show();
 }
