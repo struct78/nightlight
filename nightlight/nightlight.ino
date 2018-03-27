@@ -5,23 +5,25 @@
 
 enum Pattern {
   WIPE,
+  DIAGONAL_WIPE,
   RADIAL,
-  PULSE
+  RAINBOW
 };
 
 const int cols = 8;
 const int rows = 5;
 const int pin = 6;
-const int contrast = 1;
-const float theta = 0.33; // Speed of colour change
-int brightness = 128;
-int powerSavingBrightness = 5;
+const int contrast = 10;
+const float theta = 0.05; // Speed of colour change
+
+Pattern pattern = RAINBOW;
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(rows, cols, pin, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE, NEO_GRB + NEO_KHZ800);
+
+int brightness = 80;
 bool power = true;
 long ticks = 0;
 long timeout = 3600000; // 1 hour
 float delta = 0;
-Pattern pattern = RADIAL;
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(cols, rows, pin, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   Serial.begin(115200);
@@ -39,15 +41,14 @@ void loop() {
 **/
 void neomatrix_setup() {
   matrix.begin();
-  matrix.setBrightness( brightness );
-  matrix.fillScreen( matrix.Color( 255, 50, 255 ) );
+  matrix.fillScreen(0);
   matrix.show();
 }
 
 
 /**
  * @name hue_to_rgb
- * @description Helper function for hue_to_rgb. Converts hue degrees to RGB.
+ * @description Helper function for hsl_to_rgb. Converts hue degrees to RGB.
  * @param {float} p - Combination of lightness/brightness (0.0 - 1.0)
  * @param {float} q - Combination of lightness/brightness (0.0 - 1.0)
  * @param {float} t - Hue (0.0 - 1.0)
@@ -63,7 +64,7 @@ float hue_to_rgb( float p, float q, float t ) {
 }
 
 /**
- * @name hue_to_rgb
+ * @name hsl_to_rgb
  * @description Converts HSL to RGB.
  * @param {float} h - Hue (0.0 - 1.0)
  * @param {float} s - Saturation (0.0 - 1.0)
@@ -111,6 +112,12 @@ float dist( float x1, float y1, float x2, float y2 ) {
  * @return {void}
 **/
 void neomatrix_loop() {
+  if (ticks > timeout) {
+    power = false;
+  } else {
+    ticks = millis();
+  }
+  
   uint8_t x, y, z;
   float hue = 0.0;
 
@@ -118,37 +125,42 @@ void neomatrix_loop() {
     matrix.setBrightness( brightness );
 
     delta += theta;
-    for ( x = 0 ; x < cols ; x++ ) {
-      for ( y = 0 ; y < rows ; y++ ) {
-        float distance = dist( (float)cols/2, (float)rows/2, (float)x, (float)y );
+
+    if (delta >= 360) {
+      delta = 0;
+    }
+    
+    for ( x = 0 ; x < rows ; x++ ) {
+      for ( y = 0 ; y < cols ; y++ ) {
+        z = x + y;
+        float distance = dist( (float)rows/2, (float)cols/2, (float)x, (float)y );
         switch ( pattern ) {
           case RADIAL:
             hue = (float)(int((delta - distance) * contrast) % 360) / 360;
             matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ) );
             break;
           case WIPE:
-            hue = (float)(int((z / rows) + delta) % 360) / 360;
+            hue = (float)(int((delta + y) * contrast) % 360) / 360;
             matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ));
             break;
-          case PULSE:
-            hue = (float)(int((delta - distance) * contrast) % 360) / 360;
-            Serial.println(abs(sin(delta) * .5));
-            matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.4 + abs(sin(delta) * 0.1)) );
+          case DIAGONAL_WIPE:
+            hue = (float)(int((delta + z) * contrast) % 360) / 360;
+            matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ));
+            break;
+          case RAINBOW:
+            hue = (float)(int(((360 / rows) * x) + delta) % 360) / 360;
+            matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ) );
+            break;
           default:
             break;
         }
+        
+        matrix.show();
       }
     }
   }
   else {
     matrix.fillScreen(0);
-  }
-
-  matrix.show();
-
-  ticks = millis();
-
-  if (ticks > timeout) {
-    brightness = powerSavingBrightness;
+    matrix.show();
   }
 }
