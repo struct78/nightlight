@@ -12,32 +12,26 @@ Neopixel Shield | [US$27.95](https://www.adafruit.com/product/1430) |
 
 Change these variables to alter how the light works.
 
-**const int contrast**
+**const int contrast** (Default: 10)
 
-Increases the contrast between 1 pixel and the next when transitioning.
-Default: 1
+Increases the contrast between 1 pixel and the next when transitioning. The lower the number, the lower the contrast.
 
-**const float theta**
+**const float theta** (Default: 0.2)
 
 The lower the number, the slower the transition through the colour spectrum.
-Default: 0.33
 
-**int brightness**
+**int brightness** (Default: 80)
 
 Sets the brightness of the LEDS. Use an integer between 1 and 255. WARNING: Setting the brightness to high could result in the board freezing as it drains a lot of power.
-Default: 128;
 
-**int powerSavingBrightness**
+**long timeout** (Default: 3,600,000ms or 1 hour)
 
-Sets the brightness of the shield when the timeout has passed and the board has gone into power saving mode.
-Default: 5
+This determines how long the shield will animate. Once this timeout has passed, it will turn off all the LEDs.
 
-**long timeout**
+**Pattern pattern** (Default: RAINBOW)
 
-This determines how long the shield will animate at full power. Once this timeout has passed, it will transition to power saving mode.
-Default: 1 hour (3600000 milliseconds)
-
-**Pattern pattern**
-
-An enumerator that determines how the LEDs animate. There are 3 options. Wipe (left to right), Radial (center to outside), and Pulse (like Radial but with rising/falling brightness)
-Default: RADIAL
+An enumerator that determines how the LEDs animate. There are 4 options.
++ WIPE (left to right)
++ DIAGONAL_WIPE (top left to bottom right)
++ RADIAL (center to outside)
++ and RAINBOW (each row cycles through, starting at a different fifth of the spectrum giving a rainbow effect)

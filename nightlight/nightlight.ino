@@ -14,7 +14,7 @@ const int cols = 8;
 const int rows = 5;
 const int pin = 6;
 const int contrast = 10;
-const float theta = 0.05; // Speed of colour change
+const float theta = 0.2; // Speed of colour change
 
 Pattern pattern = RAINBOW;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(rows, cols, pin, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE, NEO_GRB + NEO_KHZ800);
@@ -117,7 +117,7 @@ void neomatrix_loop() {
   } else {
     ticks = millis();
   }
-  
+
   uint8_t x, y, z;
   float hue = 0.0;
 
@@ -129,7 +129,7 @@ void neomatrix_loop() {
     if (delta >= 360) {
       delta = 0;
     }
-    
+
     for ( x = 0 ; x < rows ; x++ ) {
       for ( y = 0 ; y < cols ; y++ ) {
         z = x + y;
@@ -154,7 +154,7 @@ void neomatrix_loop() {
           default:
             break;
         }
-        
+
         matrix.show();
       }
     }
