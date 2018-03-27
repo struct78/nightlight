@@ -36,4 +36,4 @@ An enumerator that determines how the LEDs animate. There are 4 options.
 + RADIAL (center to outside)
 + and RAINBOW (each row cycles through, starting at a different fifth of the spectrum giving a rainbow effect)
 
-![Photo](https://github.com/struct78/nightlight/raw/develop/images/nightlight.png)
+![Photo](https://github.com/struct78/nightlight/raw/develop/images/nightlight.jpg)
