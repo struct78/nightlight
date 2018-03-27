@@ -16,11 +16,11 @@ Change these variables to alter how the light works.
 
 Increases the contrast between 1 pixel and the next when transitioning. The lower the number, the lower the contrast.
 
-**const float theta** (Default: 0.2)
+**const float theta** (Default: 0.025)
 
 The lower the number, the slower the transition through the colour spectrum.
 
-**int brightness** (Default: 80)
+**const int brightness** (Default: 64)
 
 Sets the brightness of the LEDS. Use an integer between 1 and 255. WARNING: Setting the brightness to high could result in the board freezing as it drains a lot of power.
 
