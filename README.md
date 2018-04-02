@@ -28,12 +28,12 @@ Sets the brightness of the LEDS. Use an integer between 1 and 255. WARNING: Sett
 
 This determines how long the shield will animate. Once this timeout has passed, it will turn off all the LEDs.
 
-**Pattern pattern** (Default: RAINBOW)
+**Pattern pattern** (Default: DIAGONAL_WIPE)
 
 An enumerator that determines how the LEDs animate. There are 4 options.
 + WIPE (left to right)
 + DIAGONAL_WIPE (top left to bottom right)
 + RADIAL (center to outside)
-+ and RAINBOW (each row cycles through, starting at a different fifth of the spectrum giving a rainbow effect)
++ and RAINBOW_STRIPE (each row cycles through, starting at a different fifth of the spectrum giving a rainbow effect)
 
 ![Photo](https://github.com/struct78/nightlight/raw/develop/images/nightlight.jpg)
