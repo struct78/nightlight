@@ -17,7 +17,7 @@ const int contrast = 10;
 const float theta = 0.025; // Rate of colour change
 const int brightness = 64;
 
-Pattern pattern = RAINBOW_STRIPE;
+Pattern pattern = DIAGONAL_WIPE;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(rows, cols, pin, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE, NEO_GRB + NEO_KHZ800);
 
 bool power = true;
