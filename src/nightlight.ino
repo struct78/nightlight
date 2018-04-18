@@ -2,23 +2,26 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
+#include <SimplexNoise.h>
 
 enum Pattern {
   WIPE,
   DIAGONAL_WIPE,
   RADIAL,
-  RAINBOW_STRIPE
+  RAINBOW_STRIPE,
+  FIREPLACE
 };
 
 const int cols = 8;
 const int rows = 5;
 const int pin = 6;
-const int contrast = 10;
+const int contrast = 40;
 const float theta = 0.025; // Rate of colour change
 const int brightness = 64;
 
-Pattern pattern = DIAGONAL_WIPE;
+Pattern pattern = FIREPLACE;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(rows, cols, pin, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE, NEO_GRB + NEO_KHZ800);
+SimplexNoise simplex;
 
 bool power = true;
 long ticks = 0;
@@ -105,6 +108,9 @@ float dist( float x1, float y1, float x2, float y2 ) {
     return (float) sqrt(dx*dx + dy*dy);
 }
 
+double mapf(float val, float in_min, float in_max, float out_min, float out_max) {
+    return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
 /**
  * @name neomatrix_loop
@@ -119,7 +125,9 @@ void neomatrix_loop() {
   }
 
   uint8_t x, y, z;
-  float hue = 0.0;
+  float h = 0.0;
+  float b = 0.5;
+  float s = 1.0;
 
   if ( power ) {
     matrix.setBrightness( brightness );
@@ -133,33 +141,35 @@ void neomatrix_loop() {
     for ( x = 0 ; x < rows ; x++ ) {
       for ( y = 0 ; y < cols ; y++ ) {
         z = x + y;
-        float distance = dist( (float)rows/2, (float)cols/2, (float)x, (float)y );
+        float distance = dist( (float)rows/2, (float)cols/2, (float)x+.5, (float)y+.5 );
         switch ( pattern ) {
           case RADIAL:
-            hue = (float)(int((delta - distance) * contrast) % 360) / 360;
-            matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ) );
+            h = (float)(int((delta - distance) * contrast) % 360) / 360;
             break;
           case WIPE:
-            hue = (float)(int((delta + y) * contrast) % 360) / 360;
-            matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ));
+            h = (float)(int((delta + y) * contrast) % 360) / 360;
             break;
           case DIAGONAL_WIPE:
-            hue = (float)(int((delta + z) * contrast) % 360) / 360;
-            matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ));
+            h = (float)(int((delta + z) * contrast) % 360) / 360;
             break;
           case RAINBOW_STRIPE:
-            hue = (float)(int(((360 / rows) * x) + delta * contrast) % 360) / 360;
-            matrix.drawPixel( x, y, hsl_to_rgb( hue, 1.0, 0.5 ) );
+            h = (float)(int(((360 / rows) * x) + delta * contrast) % 360) / 360;
+            break;
+					case FIREPLACE:
+						h = (float)(1 + abs( simplex.noise(delta, sin(x+y) ) ) * 35 ) / 360;
+            b = constrain( mapf( simplex.noise( delta, sin(distance) ) + random( -0.35, 0.35 ), 0.0, 1.0, 0.45, 0.8 ), 0.45, 0.8 );
             break;
           default:
             break;
         }
+
+        matrix.drawPixel( x, y, hsl_to_rgb( h, s, b ) );
       }
     }
   }
   else {
     matrix.fillScreen(0);
   }
-  
+
   matrix.show();
 }
